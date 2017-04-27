@@ -1,0 +1,18 @@
+{
+  "name": "ledger-scrapers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "node": "6",
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "rewire": "^2.5.2"
+  },
+  "dependencies": {
+    "osmosis": "^1.1.4"
+  }
+}
