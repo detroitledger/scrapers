@@ -1,17 +1,18 @@
 module.exports = {
-  root: true,
+  root:          true,
   parserOptions: {
     ecmaVersion: 6,
-    sourceType: 'module',
+    sourceType:  'module',
   },
   extends: 'eslint:recommended',
-  env: {
-    node: true,
+  env:     {
+    node:  true,
     mocha: true,
-    es6: true,
+    es6:   true,
   },
   rules: {
-    'no-console': 0,
-    semi: ['error', 'never'],
+    'no-console':  0,
+    semi:          ['error', 'never'],
+    'key-spacing': ['error', { mode: 'minimum', align: 'value' }],
   },
 }

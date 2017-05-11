@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.1/papaparse.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bluebird/2.9.33/bluebird.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/fuzzyset.js/0.0.1/fuzzyset.min.js"></script>
+
+  <style type="text/css">
+  *,
+  input {
+    font-family: Helvetica, sans-serif;
+    font-size: 30px;
+  }
+
+  input {
+    width: 100%;
+    border-width: 5px
+    border-color: #eee;
+  }
+
+  .container {
+    overflow: auto;
+    width: 960px;
+    margin: 0px auto;
+  }
+
+  #results {
+    margin-top: 0.5em;
+  }
+
+  #results .result {
+    color: #360;
+  }
+
+  .result {
+    background: #eee;
+    margin-bottom: 1px;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    text-transform: capitalize;
+  }
+
+  .button {
+    background: #eee;
+    margin-bottom: 1px;
+    border-radius: 5px;
+    padding: 0px 10px;
+    line-height: 1.2em;
+    cursor: pointer;
+  }
+
+  a {
+    color: #036;
+  }
+
+  pre {
+    font-size: 12px;
+    font-family: monospace;
+    overflow: scroll;
+  }
+
+
+  </style>
+
+  <script type="text/javascript">
+  var grantList = DATAHERE
+</script>
+
+  <script type="text/javascript">
+  /*globals
+  Papa, FuzzySet, localStorage
+  */
+
+$(function() {
+  var selectedGrant
+  var $search = $('#search')
+
+  var resultTemplate = _.template($('#template-results').html())
+
+  function store(result) {
+    console.log('storing org', result)
+
+    // Get the full details of the grant at this index
+    var storedResults = JSON.parse(localStorage.getItem('results'))
+    console.log('Got JSON', storedResults)
+
+    if (storedResults === null) {
+      storedResults = []
+    }
+
+    storedResults.push(
+      Object.assign(selectedGrant, {
+        grantee_id:   result.id,
+        grantee_name: result.title,
+      })
+    )
+
+    localStorage.setItem('results', JSON.stringify(storedResults))
+
+    setGrant()
+  }
+
+  function search(val) {
+    console.log('Typed', val)
+
+    // Empty the template to get ready to display results.
+    $('#results').html('')
+    var fullResults = []
+
+    $.get(
+      'https://data.detroitledger.org/api/1.0/orgs.json?filters[title]=' + val
+    ).then(function(results) {
+      // We'll get a list of results.
+      _.each(results.orgs, function(org) {
+        // Find the full org record
+        // We'll need that to get the EIN.
+
+        var $result = $(resultTemplate({ org: org }))
+
+        // If a result is selected, display it.
+        $result.on(
+          'click',
+          function(e) {
+            store(org)
+          }.bind(this)
+        )
+
+        // Display the result
+        $('#results').append($result)
+      })
+    })
+  }
+
+  function setupSearch() {
+    $search.on('input', function(e) {
+      var val = e.target.value
+      search(val)
+    })
+
+    $('#notfound').click(function() {
+      store({
+        notes: 'other',
+      })
+    })
+  }
+
+  function csvOut() {
+    var storedResults = JSON.parse(localStorage.getItem('results'))
+    var csv = Papa.unparse({
+      // fields: ['org', 'nid', 'irs_name', 'ein', 'notes'],
+      data: storedResults,
+    })
+    console.log('Got CSV')
+    $('#data').html(csv)
+  }
+
+  function setGrant() {
+    // Get the last saved index
+    var idx = parseInt(_.trimLeft(window.location.hash, '#'), 10) //parseInt(localStorage.getItem('next'), 10);
+    console.log('hash', window.location.hash)
+    if (idx === '' || isNaN(idx)) {
+      var storedResults = JSON.parse(localStorage.getItem('results'))
+      if (storedResults) {
+        window.location.hash = '#' + storedResults.length
+        idx = storedResults.length
+      } else {
+        window.location.hash = '#' + 0
+        idx = 0
+      }
+    } else {
+      // Increment the index by 1
+      idx += 1
+      window.location.hash = '#' + idx
+    }
+
+    // Find the org at that index
+    selectedGrant = grantList[idx]
+    if (selectedGrant) {
+      $('#name').html(selectedGrant.grantee)
+    } else {
+      $('#name').html("I think you're done")
+    }
+
+    csvOut()
+
+    // Try to search for it
+    $search.val(selectedGrant.grantee)
+    search(selectedGrant.grantee)
+  }
+
+  function start(grantList) {
+    $('.next').click(setGrant)
+
+    $('.clear').click(function() {
+      localStorage.clear()
+      window.location.hash = 0
+      setGrant()
+    })
+
+    setupSearch()
+    setGrant()
+    csvOut()
+  }
+
+  start(grantList)
+})
+</script>
+
+</head>
+<body>
+
+<div class="container">
+    <a class="clear button">clear</a>
+    <h2 id="name">Loading</h2>
+    <input id="search">
+    <div id="results"></div>
+    <div class="result" id="notfound">Not found</div>
+    <pre id="data"></pre>
+  </div>
+</div>
+
+<script type="text/template" id="template-results">
+  <div class="result">
+    <%= org.title %>
+  </div>
+</script>
+
+
+</body>
+</html>
