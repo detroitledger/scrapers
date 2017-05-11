@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "scrape": "node index.js",
+    "match": "node lib/match.js",
     "test": "mocha --recursive --ui tdd --reporter spec -s 2000 -t 5000",
     "coverage": "nyc --reporter=text --reporter=html mocha --recursive --ui tdd --reporter spec -s 2000 -t 5000"
   },
@@ -22,6 +23,7 @@
     "ent": "^2.2.0",
     "fs-extra": "^3.0.0",
     "moment": "^2.18.1",
+    "opn": "^5.0.0",
     "osmosis": "^1.1.4",
     "request-promise": "^4.2.0",
     "striptags": "^3.0.1"

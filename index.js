@@ -5,8 +5,7 @@ const scrapers = {
   knight,
 }
 
-const args = process.argv
-const name = args[2]
+const name = process.argv[2]
 
 if (!scrapers[name]) {
   console.error(`No scraper for ${name}`)

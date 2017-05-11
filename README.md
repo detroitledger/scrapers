@@ -18,6 +18,17 @@ for a list of scrapers.
 
 Results will be saved as a CSV in the project root directory.
 
+## Match grants to ledger org
+
+```
+npm run match knight
+```
+
+This will give you an interface to match a grantee organization to its ledger ID
+The interface will also build up a new CSV with the matched org and its data.
+It won't automatically save the CSV; you'll have to copy and paste it yourself
+for now.
+
 ## Developing
 
 Each scraper should return a promise that resolves to a JSON array of grants
