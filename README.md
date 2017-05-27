@@ -26,8 +26,12 @@ npm run match knight
 
 This will give you an interface to match a grantee organization to its ledger ID
 The interface will also build up a new CSV with the matched org and its data.
-It won't automatically save the CSV; you'll have to copy and paste it yourself
-for now.
+
+Selecting "Save to CSV" will save your results to `orgname-matched.csv` (eg
+`knight-matched.csv` if you ran `npm run match knight`). The Ledger grantee's
+node ID and name are in the `grantee_id` and `grantee_name` columns. If there
+wasn't a match for those orgs, those columns will be blank; you'll have to deal
+with them yourself. 
 
 ## Developing
 
