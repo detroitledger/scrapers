@@ -65,6 +65,18 @@
     overflow: scroll;
   }
 
+  h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+
+  h6 {
+    margin: 2em 0 0 0;
+    font-size: 12px;
+    font-weight: bold;
+    color: #666;
+  }
+
 
   </style>
 
@@ -98,6 +110,7 @@ $(function() {
       Object.assign(selectedGrant, {
         grantee_id:   result.id,
         grantee_name: result.title,
+        notes:        result.notes,
       })
     )
 
@@ -185,6 +198,7 @@ $(function() {
       $('#name').html(selectedGrant.grantee)
     } else {
       $('#name').html("I think you're done")
+      $('.submit').show()
     }
 
     csvOut()
@@ -192,6 +206,12 @@ $(function() {
     // Try to search for it
     $search.val(selectedGrant.grantee)
     search(selectedGrant.grantee)
+  }
+
+  function saveToCSV() {
+    console.log('Saving results to csv')
+    var csv = $('#data').text()
+    $.post('/', csv)
   }
 
   function start(grantList) {
@@ -202,6 +222,8 @@ $(function() {
       window.location.hash = 0
       setGrant()
     })
+
+    $('.submit').click(saveToCSV)
 
     setupSearch()
     setGrant()
@@ -216,11 +238,18 @@ $(function() {
 <body>
 
 <div class="container">
-    <a class="clear button">clear</a>
+    <a class="clear button">Clear</a>
+    <a class="submit button">Save to CSV</a>
+
+    <h6>Org name</h6>
     <h2 id="name">Loading</h2>
     <input id="search">
+
+    <h6>Match to:</h6>
     <div id="results"></div>
     <div class="result" id="notfound">Not found</div>
+
+    <h6>So far:</h6>
     <pre id="data"></pre>
   </div>
 </div>
