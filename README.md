@@ -40,10 +40,11 @@ with the following headers:
 
 ```
 granter_id    // Detroit Ledger ID of the granter
+grantee       // Name of the grantee
+grantee_id    // ID of the grantee
 description   // Plain-text description
 start         // Moment date
 end           // Moment date
-grantee       // Name of the grantee
 amount        // Amount as a number
 url           // Reference url
 ```
