@@ -36,7 +36,8 @@ with them yourself.
 ## Developing
 
 Each scraper should return a promise that resolves to a JSON array of grants
-with the following headers:
+with the following headers. These headers are also expected in every CSV
+produced. It's ok if a column exists but has no values. 
 
 ```
 granter_id    // Detroit Ledger ID of the granter
